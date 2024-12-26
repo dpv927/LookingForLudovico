@@ -3,28 +3,32 @@ local LFL = RegisterMod('Looking for Ludovico', 1)
 LFL:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	local game = Game()
 	local level = game:GetLevel()
-	local rooms = level:GetRooms()
+	local rooms =  level:GetRooms()
 
 	local initialRoom = level:GetCurrentRoomIndex()
-	local position = Isaac.GetPlayer(0).Position
+	local initialPosition = Isaac.GetPlayer(0).Position
 	LFL.found_item = false
 
 	for i=0, #rooms - 1 do
 		local room = rooms:Get(i)
 
 		if room.Data.Type == RoomType.ROOM_TREASURE then
-			
-			-- The purpose of entering the treasure room is to force the load 
-			-- of the items at the room (rooms contents are not loaded until
-			-- you enter for the first time).
-			
+
+			-- Here we just make the player to be in the top left corner, so we avoid piking up the
+			-- pedestal item accidentally when entering the treasure room.
+			Isaac.GetPlayer(0).Position = game:GetRoom():GetTopLeftPos()
+
+			-- The purpose of entering the treasure room is to force the load of the items at the room
+			-- (rooms contents are not loaded until you enter for the first time).
 			game:ChangeRoom(room.GridIndex)
 			local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, -1, false, false)
 
 			for _, pickup in ipairs(pickups) do
 				if pickup then
-					if Isaac.GetItemConfig():GetCollectible(pickup.SubType).ID == CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE then
-						print("Ludovico's Technique was found!")
+					-- Ensure that the collectible is not nil and its the item we are looking for.
+					local collectible = Isaac.GetItemConfig():GetCollectible(pickup.SubType)
+
+					if collectible and collectible.ID == CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE then
 						game:GetPlayer(0):AnimateHappy()
 						LFL.found_item = true
 						goto endCallback
@@ -34,13 +38,14 @@ LFL:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 		end
 	end
 
-	-- Restore player room and position only if the item was not 
-	-- found at any treasure room.
-	print("Ludovico's Technique was not found :(")
 	::endCallback::
-	Isaac.GetPlayer(0).Position = position
+
+	-- Go back to the initial room and restore the player
+	-- position inside it.
+	Isaac.GetPlayer(0).Position = initialPosition
 	game:ChangeRoom(initialRoom)
 	LFL.initial_room = game:GetRoom()
+	
 end)
 
 
