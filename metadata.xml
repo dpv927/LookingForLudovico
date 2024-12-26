@@ -15,12 +15,7 @@
 
 The player may not feel comfortable with the consequences of this mod.
 
-Due to the game's design, the items in each room are only loaded the first time you enter. Consequently, the mod simulates entering the treasure room to inspect the items and then returns to the initial room. This process not only marks the treasure room on the map but shows the adjacent rooms marked and its door permanently open, meaning you will no longer need a key to access it.
-
-[h1]Current Tasks[/h1]
-[list]
-[*] Optimize for ignoring levels that do not contain treasure rooms.
-[/list]</description>
+Due to the game's design, the items in each room are only loaded the first time you enter. Consequently, the mod simulates entering the treasure room to inspect the items and then returns to the initial room. This process not only marks the treasure room on the map but shows the adjacent rooms marked and its door permanently open, meaning you will no longer need a key to access it.</description>
     <version>1.3</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>

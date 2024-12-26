@@ -1,15 +1,28 @@
 local LFL = RegisterMod('Looking for Ludovico', 1)
 
+
 LFL:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	local game = Game()
 	local level = game:GetLevel()
-	local rooms =  level:GetRooms()
 
-	local initialRoom = level:GetCurrentRoomIndex()
-	local initialPosition = Isaac.GetPlayer(0).Position
+	-- We dont need to check levels where there are no treasure rooms.
+	-- For greed mode, we can ignore the last level and for hard or 
+	-- normal mode, we can ignore all levels after Depths II.
+
+	if (game:IsGreedMode() and level:GetStage() == LevelStage.STAGE7_GREED)
+		or (level:GetStage() > LevelStage.STAGE3_2) then
+		return
+	end
+
+	local rooms =  level:GetRooms()
 	LFL.found_item = false
 
-	for i=0, #rooms - 1 do
+	local initialRoom = {
+		position = Isaac.GetPlayer(0).Position,
+		idx = level:GetCurrentRoomIndex(),
+	}
+
+	for  i=0, #rooms - 1 do
 		local room = rooms:Get(i)
 
 		if room.Data.Type == RoomType.ROOM_TREASURE then
@@ -42,8 +55,8 @@ LFL:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 
 	-- Go back to the initial room and restore the player
 	-- position inside it.
-	Isaac.GetPlayer(0).Position = initialPosition
-	game:ChangeRoom(initialRoom)
+	Isaac.GetPlayer(0).Position = initialRoom.position
+	game:ChangeRoom(initialRoom.idx)
 	LFL.initial_room = game:GetRoom()
 	
 end)
