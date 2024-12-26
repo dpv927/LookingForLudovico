@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Looking for Ludovico</name>
+    <directory>looking for ludovico</directory>
+    <id>3392017769</id>
+    <description>This mod will tell you if the Item 'The Ludovico Technique' is present at any treasure room of a level. The source code of this mod can be found at [url=https://github.com/dpv927/]GitHub[/url].
+
+[h1]Features[/h1]
+[list]
+[*] When the item is found, a message will be displayed near the player.
+[*] The message will not disappear unless the player moves to another room.
+[/list]
+
+[h1]Warning[/h1]
+
+The player may not feel comfortable with the consequences of this mod.
+
+Due to the way the game is designed, the items in a rooms are only loaded the first time you enter the room. Therefore, the mod simulates entering the treasure room to inspect the items and then re-enters the initial room. This causes not only the treasure room to be marked on the map, but all the way back to the initial room and the door permanently open (so you no longer need a key to enter).
+
+In Greed mode it's exactly the same, but the fact that you don't need a key (one of the challenges of the mode) can make the gameplay much easier and thats not what the player is looking for. 
+
+	</description>
+    <version>1.2</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
+</metadata>
