@@ -34,6 +34,15 @@ LFL:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 			-- The purpose of entering the treasure room is to force the load of the items at the room
 			-- (rooms contents are not loaded until you enter for the first time).
 			game:ChangeRoom(room.GridIndex)
+
+			-- Set the actual room as not visited, so the current treasure room and its adjacent
+			-- rooms wont be marked in the map!
+			local writableRoomDesc  = level:GetRoomByIdx(level:GetCurrentRoomIndex())
+			writableRoomDesc.VisitedCount = 0
+			writableRoomDesc.DisplayFlags = 0
+			game:GetRoom():Update()
+			print(room.VisitedCount)
+
 			local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, -1, false, false)
 
 			for _, pickup in ipairs(pickups) do
@@ -66,12 +75,12 @@ LFL:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 	if LFL.found_item then
 		local position = Isaac.GetPlayer(0).Position
 
-		position.X = position.X - 150
-		position.Y = position.Y - 80
+		position.X = position.X - 100
+		position.Y = position.Y + 10
 		local renderpos = Isaac.WorldToScreen(position)
 		Isaac.RenderText("I can feel Ludovico's", renderpos.X, renderpos.Y, 1,1,1,1)
 
-		position.X = position.X + 30
+		position.X = position.X + 50
 		position.Y = position.Y + 20
 		renderpos = Isaac.WorldToScreen(position)
 		Isaac.RenderText("presence...", renderpos.X, renderpos.Y, 1,1,1,1)
