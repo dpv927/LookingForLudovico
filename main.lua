@@ -75,12 +75,12 @@ LFL:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 	if LFL.found_item then
 		local position = Isaac.GetPlayer(0).Position
 
-		position.X = position.X - 100
-		position.Y = position.Y + 10
+		position.X = position.X - 150
+		position.Y = position.Y - 80
 		local renderpos = Isaac.WorldToScreen(position)
 		Isaac.RenderText("I can feel Ludovico's", renderpos.X, renderpos.Y, 1,1,1,1)
 
-		position.X = position.X + 50
+		position.X = position.X + 30
 		position.Y = position.Y + 20
 		renderpos = Isaac.WorldToScreen(position)
 		Isaac.RenderText("presence...", renderpos.X, renderpos.Y, 1,1,1,1)

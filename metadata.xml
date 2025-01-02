@@ -9,7 +9,6 @@
 [list]
 [*] When the item is found, a message will be displayed near the player.
 [*] The message will not disappear unless the player moves to another room.
-[*] The message is now shown above the player so that it does not overlap with the dialogue that will appear in a future mod of mine.
 [*] Major fix: The map issue has been resolved. Now, the treasure room and its adjacent rooms don't show as visited on the map.
 [/list]</description>
     <version>1.5</version>
