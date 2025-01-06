@@ -7,11 +7,16 @@
 
 [h1]Features[/h1]
 [list]
-[*] When the item is found, a message will be displayed near the player.
+[*] When the item is found, a message will be displayed near the player and Isaac will do the thumbs up emote.
 [*] The message will not disappear unless the player moves to another room.
-[*] Major fix: The map issue has been resolved. Now, the treasure room and its adjacent rooms don't show as visited on the map.
+[/list]
+
+[h1]Fixes (Version 1.6)[/h1]
+[list]
+[*] Somehow, some adjacent rooms to the treasure rooms still showed up in the map. This is now fixed.
+[*] This mod caused the golden treasure room in Greed mode to stay open and does not seem to be a primitive solution. Therefore, Greed mode won't be supported by this mod until this issue is solved. 
 [/list]</description>
-    <version>1.5</version>
+    <version>1.6</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>

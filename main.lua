@@ -1,49 +1,64 @@
 local LFL = RegisterMod('Looking for Ludovico', 1)
 
 
+--- Returns true if the current level can have a treasure room.
+--- In Hard mode, there are treasure rooms in all levels up to 
+--- the level with Mom's fight.
+---@param level Level
+local function IsTreasureRoomInLevel(level)
+	return level:GetStage() <= LevelStage.STAGE3_2
+end
+
+
+--- Hides a room and its adjacent rooms in the map.
+--- @param room RoomDescriptor
+--- @param level Level
+local function HideRoomAndAdjacents(room, level)
+
+	local wrd = level:GetRoomByIdx(room.SafeGridIndex)
+	wrd.DisplayFlags = 0
+	wrd.VisitedCount = 0
+
+	for offset in ipairs({13, -1, 1, -13}) do
+		wrd = level:GetRoomByIdx(room.SafeGridIndex + offset)
+
+		if wrd then
+			wrd.DisplayFlags = 0
+		end
+	end
+end
+
+
 LFL:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 	local game = Game()
 	local level = game:GetLevel()
 
-	-- We dont need to check levels where there are no treasure rooms.
-	-- For greed mode, we can ignore the last level and for hard or 
-	-- normal mode, we can ignore all levels after Depths II.
-
-	if (game:IsGreedMode() and level:GetStage() == LevelStage.STAGE7_GREED)
-		or (level:GetStage() > LevelStage.STAGE3_2) then
+	if game:IsGreedMode() or (not IsTreasureRoomInLevel(level)) then
+		-- Greed mode not supported and we can skip levels after
+		-- Mom's fight (Womb, Utero, etc).
 		return
 	end
 
-	local rooms =  level:GetRooms()
+	local levelRoomsList = level:GetRooms()
+	local iPosition = Isaac.GetPlayer(0).Position
+	local iRoomIdx  = level:GetCurrentRoomIndex()
+
 	LFL.found_item = false
 
-	local initialRoom = {
-		position = Isaac.GetPlayer(0).Position,
-		idx = level:GetCurrentRoomIndex(),
-	}
-
-	for  i=0, #rooms - 1 do
-		local room = rooms:Get(i)
+	for  i=0, #levelRoomsList - 1 do
+		local room = levelRoomsList:Get(i)
 
 		if room.Data.Type == RoomType.ROOM_TREASURE then
 
-			-- Here we just make the player to be in the top left corner, so we avoid piking up the
-			-- pedestal item accidentally when entering the treasure room.
-			Isaac.GetPlayer(0).Position = game:GetRoom():GetTopLeftPos()
-
-			-- The purpose of entering the treasure room is to force the load of the items at the room
-			-- (rooms contents are not loaded until you enter for the first time).
+			-- Change room to force item load/generation
+			Isaac.GetPlayer(0).Position = Vector(350,0)
 			game:ChangeRoom(room.GridIndex)
 
-			-- Set the actual room as not visited, so the current treasure room and its adjacent
-			-- rooms wont be marked in the map!
-			local writableRoomDesc  = level:GetRoomByIdx(level:GetCurrentRoomIndex())
-			writableRoomDesc.VisitedCount = 0
-			writableRoomDesc.DisplayFlags = 0
-			game:GetRoom():Update()
-			print(room.VisitedCount)
-
-			local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, -1, false, false)
+			local pickups = Isaac.FindByType(
+				EntityType.ENTITY_PICKUP, 
+				PickupVariant.PICKUP_COLLECTIBLE,
+				-1, false, false
+			)
 
 			for _, pickup in ipairs(pickups) do
 				if pickup then
@@ -53,21 +68,24 @@ LFL:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 					if collectible and collectible.ID == CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE then
 						game:GetPlayer(0):AnimateHappy()
 						LFL.found_item = true
-						goto endCallback
+						break
 					end
 				end
 			end
+
+			-- Come back to the initial room
+			HideRoomAndAdjacents(room, level)
+			game:GetRoom():Update()
+
+			Isaac.GetPlayer(0).Position = iPosition
+			game:ChangeRoom(iRoomIdx)
+			LFL.initial_room = game:GetRoom()
+
+			if LFL.found_item then
+				break
+			end
 		end
 	end
-
-	::endCallback::
-
-	-- Go back to the initial room and restore the player
-	-- position inside it.
-	Isaac.GetPlayer(0).Position = initialRoom.position
-	game:ChangeRoom(initialRoom.idx)
-	LFL.initial_room = game:GetRoom()
-	
 end)
 
 
